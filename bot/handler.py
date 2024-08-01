@@ -46,7 +46,6 @@ async def choose_blockchain(call):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('asic_'))
 async def choose_count(call):
-    # Перенаправляем пользователя к выбору количества
     user_data[call.from_user.id] = {'number': ''}
     markup = types.InlineKeyboardMarkup(row_width=3)
     buttons = [types.InlineKeyboardButton(text=str(i), callback_data=f'num_{i}') for i in range(1, 10)]

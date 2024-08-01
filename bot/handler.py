@@ -101,7 +101,6 @@ async def handle_clear(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == 'submit')
 async def handle_submit(call):
-    # Переход к следующему состоянию
     await bot.edit_message_text(f'Вы выбрали количество: {user_data[call.from_user.id]["number"]}', call.message.chat.id, msg_ids[call.message.chat.id])
 
     

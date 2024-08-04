@@ -89,8 +89,8 @@ async def handle_clear(call):
     
     markup = types.InlineKeyboardMarkup(row_width=3)
     buttons = [types.InlineKeyboardButton(text=str(i), callback_data=f'num_{i}') for i in range(1, 10)]
-    buttons.append(types.InlineKeyboardButton(text='0', callback_data='num_0'))
     buttons.append(types.InlineKeyboardButton(text='Стереть', callback_data='clear'))
+    buttons.append(types.InlineKeyboardButton(text='0', callback_data='num_0'))
     buttons.append(types.InlineKeyboardButton(text='Выбрать', callback_data='submit'))
     rows = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
     for row in rows:
@@ -102,8 +102,6 @@ async def handle_clear(call):
 @bot.callback_query_handler(func=lambda call: call.data == 'submit')
 async def handle_submit(call):
     await bot.edit_message_text(f'Вы выбрали количество: {user_data[call.from_user.id]["number"]}', call.message.chat.id, msg_ids[call.message.chat.id])
-
-    
 
 
 

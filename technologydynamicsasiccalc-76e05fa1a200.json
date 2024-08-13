@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "technologydynamicsasiccalc",
+  "private_key_id": "76e05fa1a200ce6e9883b6f17df3b61ef0a8c391",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDJ7Mhp/koq5W4e\n7J+LskXaNb5jAPuLQ4pF2JEJaIUaFjbHSzVQpXklAghvYaMuq6/JJ3hMt+LhKDDb\nVFOaFANZD4sNyFWF2FQci+qTrmHI5w7qzMBE3h/uzDW3bBkIwNRxoPogZtUhtbJ7\n6e/z1ctENUtUzN6r4MPCslK0dvqnKnmmg1qFr+2o2xZjsggvB12Wd99dvwYtCr+W\nNIzhcJWdL3HaThDZ3ZGiHtQfFgCcAf9US9I1lfHkbbjrORaZx91Jly00wSU+JYhh\nBiPD4tlrHk0YXvzpxADuPIomUVFDPD7Aqcf2mpx661K1Q6d6H8x9SnZAssGUQoaX\nNTY0KvHfAgMBAAECggEAWdrr7jrR71fMUqeScdxBeFJ9J9palYTXJbCzDeA8hrjG\n5JWjooEYMS8/6KymrJCK93UAdAdKR06WuytBzqlEOiAQDXCOGjMDbvaWSuSJMBke\nCr9Vee/sftvRtY89bqc8gloTpFKOWmNcCwc1l6iWPQKIRLKsDglFo8CtzA+8B6G0\nqFDsgD3+xWOTI3t4x0HjzNK3xkTUdV3X4uxDFD5N8rPiA65Bw+OG4+dmKsVwgSpT\nvYepS4XZRE/8WWMcUPdwgYZoaDWrpBGrqc44nVuoomCqJRkDnWc14W5ZeYw6gqYD\nEAR7zXvkUjuNNekjugItoFmd0UmmikfVtQWkZzaAzQKBgQD2CxrvA2+fuLgrfnFI\nIrSVSIUTmq3S0iOty41x/KqeEObu25upCmyIgiEi+qCmsgWTIIJNQ9EVr8qPVWUg\napTnGN+VRTG9c2C8Mtiy3IEectfo586fyhvLyoj131mz/VVIDJTaKTpKDWe3l64D\nC2t85E7MoXZojot1v0d9KjrrYwKBgQDSGKGQBRNY6WMsSHZFuA56xSRCeQFnBW+5\nhElGpeR2/QI2/TzDDq5HKQ5kRElulwM2nh8bdxbl0PN56QyPn/OTRk7B3iKN0RGU\n+aMhMZJjLOWjlTLyBdi6+3OvLJiXSHg3pd6e03UwcTp0Q5hSpCeuJW4ynSNXKFdl\n19DZESUuVQKBgGq+vKuvsPD5wiVUkS87p18Q/HNZ60oI02PmaPJoLVmweZBthKYd\nGKNM2bWESMipeZOwSffdkUu4Xcg7w0kCFKICf5YSVBcehHyCDtPiqL4eEyA/2bwn\nglGzCCKsCQ32vdYpZzcTJe/Uywey7dLyVGr13l4XOvj3xveJyik6dh+DAoGAFwoy\ndYvI8mAtywZrSfwEQnxqHIwOllCnTu3t5zx8EHxwiL0+s5lhjVY4SNCgSOtwo8W1\nXZqyvSMsADuJcBq3aHg2XNZSbcD2r6KsvBAmoI+k40qSWq4/dUnsBtLaLQT6ggfD\noSFJYbWZFnTvOGjeHR/ntM88t+sponaHZbaWoD0CgYAgRAYzJR7mKYsJmp1pUgcv\nUFYq1vK+zY4Vbgp57QubFhKWHau/zL2PX8OMnbXslZCoBQHTs2ChsVTCDoZbF52q\nHv5uwYJKXgBvXkluzRyzsukWpBI3QN8IJO8uLMYJ/6BZwA7j4BHOq8/TpjULPlRW\nqVso6hDKdXoEq6iLT7Arcw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "python-app-asic-calc@technologydynamicsasiccalc.iam.gserviceaccount.com",
+  "client_id": "109980119936849358793",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/python-app-asic-calc%40technologydynamicsasiccalc.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

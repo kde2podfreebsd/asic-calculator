@@ -5,6 +5,8 @@ from telebot.asyncio_storage import StateMemoryStorage
 
 load_dotenv()
 
+CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID")
+
 bot = AsyncTeleBot(
     os.getenv("TELEGRAM_BOT_TOKEN"),
     state_storage=StateMemoryStorage(),

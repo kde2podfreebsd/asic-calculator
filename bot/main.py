@@ -6,8 +6,9 @@ from telebot.asyncio_filters import (
     IsReplyFilter,
     StateFilter,
 )
-from bot.config import bot
+from bot.config import *
 from handler import *
+
 
 logging.basicConfig(level=logging.INFO)
 

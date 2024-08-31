@@ -170,7 +170,7 @@ async def choose_ths(call):
 async def choose_count(call):
     selected_ths = call.data.split('ths_')[1]
     context_manager.fill_current_asic(call.message.chat.id, ths=selected_ths)
-    # user_data.setdefault(call.from_user.id, {'number': '', 'selected_devices': []})
+    user_data.setdefault(call.from_user.id, {'number': '', 'selected_devices': []})
     
     current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
     message_text = (f'🟢 Алгоритм: {current_context_data.get("algorithm")}\n'
@@ -193,79 +193,36 @@ async def choose_count(call):
     await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)   
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_count)
 
-# @bot.callback_query_handler(func=lambda call: call.data.startswith('num_'), state=CalculatorStates.choose_count)
-# async def handle_number(call):
-#     user_id = call.from_user.id
-#     current_number = user_data.get(user_id, {}).get('number', '')
-#     number = call.data.split('_')[1]
-    
-#     if len(current_number) < 6:
-#         current_number += number
-#     user_data[user_id]['number'] = current_number
-
-#     markup = types.InlineKeyboardMarkup(row_width=3)
-#     buttons = [types.InlineKeyboardButton(text=str(i), callback_data=f'num_{i}') for i in range(1, 10)]
-#     buttons.append(types.InlineKeyboardButton(text='Стереть', callback_data='clear'))
-#     buttons.append(types.InlineKeyboardButton(text='0', callback_data='num_0'))
-#     buttons.append(types.InlineKeyboardButton(text='Выбрать', callback_data='submit'))
-    
-#     rows = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
-#     for row in rows:
-#         markup.row(*row)
-    
-#     current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
-#     number_display = (f'🟢 Алгоритм: {current_context_data.get("algorithm")}\n'
-#                         f'🟢 Монета: {current_context_data.get("coin")}\n'
-#                         f'🟢 Производитель: {current_context_data.get("manufacturer")}\n'
-#                         f'🟢 Модель: {current_context_data.get("model")}\n'
-#                         f'🟢 TH/s: {current_context_data.get("ths")}\n'
-#                         f'🟢 Количество: {current_number}')
-
-#     await bot.edit_message_text(number_display, call.message.chat.id, msg_ids[call.message.chat.id])
-#     await bot.edit_message_reply_markup(call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
-
 @bot.callback_query_handler(func=lambda call: call.data.startswith('num_'), state=CalculatorStates.choose_count)
 async def handle_number(call):
-    try:
-        user_id = call.from_user.id
-        current_number = user_data.get(user_id, {}).get('number', '')
-        number = call.data.split('_')[1]
+    user_id = call.from_user.id
+    current_number = user_data.get(user_id, {}).get('number', '')
+    number = call.data.split('_')[1]
+    
+    if len(current_number) < 6:
+        current_number += number
+    user_data[user_id]['number'] = current_number
 
-        if number == '0' and current_number == '':
-            return
+    markup = types.InlineKeyboardMarkup(row_width=3)
+    buttons = [types.InlineKeyboardButton(text=str(i), callback_data=f'num_{i}') for i in range(1, 10)]
+    buttons.append(types.InlineKeyboardButton(text='Стереть', callback_data='clear'))
+    buttons.append(types.InlineKeyboardButton(text='0', callback_data='num_0'))
+    buttons.append(types.InlineKeyboardButton(text='Выбрать', callback_data='submit'))
+    
+    rows = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
+    for row in rows:
+        markup.row(*row)
+    
+    current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
+    number_display = (f'🟢 Алгоритм: {current_context_data.get("algorithm")}\n'
+                        f'🟢 Монета: {current_context_data.get("coin")}\n'
+                        f'🟢 Производитель: {current_context_data.get("manufacturer")}\n'
+                        f'🟢 Модель: {current_context_data.get("model")}\n'
+                        f'🟢 TH/s: {current_context_data.get("ths")}\n'
+                        f'🟢 Количество: {current_number}')
 
-        if number == 'clear':
-            current_number = ''
-        elif len(current_number) < 6:
-            current_number += number
-
-        user_data[user_id]['number'] = current_number
-
-        markup = types.InlineKeyboardMarkup(row_width=3)
-        buttons = [types.InlineKeyboardButton(text=str(i), callback_data=f'num_{i}') for i in range(1, 10)]
-        buttons.append(types.InlineKeyboardButton(text='Стереть', callback_data='clear'))
-        buttons.append(types.InlineKeyboardButton(text='0', callback_data='num_0'))
-        buttons.append(types.InlineKeyboardButton(text='Выбрать', callback_data='submit'))
-
-        rows = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
-        for row in rows:
-            markup.row(*row)
-
-        current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
-        number_display = (f'🟢 Алгоритм: {current_context_data.get("algorithm")}\n'
-                          f'🟢 Монета: {current_context_data.get("coin")}\n'
-                          f'🟢 Производитель: {current_context_data.get("manufacturer")}\n'
-                          f'🟢 Модель: {current_context_data.get("model")}\n'
-                          f'🟢 TH/s: {current_context_data.get("ths")}\n'
-                          f'🟢 Количество: {current_number}')
-
-        await bot.edit_message_text(number_display, call.message.chat.id, msg_ids[call.message.chat.id])
-        await bot.edit_message_reply_markup(call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
-    except Exception as e:
-        print(f"Ошибка в обработчике числа: {e}")
-        await bot.send_message(call.message.chat.id, "Произошла ошибка при обработке вашего запроса. Попробуйте снова.")
-
-
+    await bot.edit_message_text(number_display, call.message.chat.id, msg_ids[call.message.chat.id])
+    await bot.edit_message_reply_markup(call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == 'clear', state=CalculatorStates.choose_count)
 async def handle_clear(call):
@@ -285,45 +242,6 @@ async def handle_clear(call):
     await bot.edit_message_text('Кол-во: ', call.message.chat.id, msg_ids[call.message.chat.id])
     await bot.edit_message_reply_markup(call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
 
-# @bot.callback_query_handler(func=lambda call: call.data == 'submit', state=CalculatorStates.choose_count)
-# async def finalize_selection(call):
-#     user_id = call.from_user.id
-#     current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
-#     quantity = user_data.get(user_id, {}).get('number', '0')
-
-#     device_info = {
-#         'algorithm': current_context_data.get('algorithm'),
-#         'coin': current_context_data.get('coin'),
-#         'manufacturer': current_context_data.get('manufacturer'),
-#         'model': current_context_data.get('model'),
-#         'ths': current_context_data.get('ths'),
-#         'quantity': quantity
-#     }
-
-#     if 'selected_devices' not in user_data[user_id]:
-#         user_data[user_id]['selected_devices'] = []
-
-#     user_data[user_id]['selected_devices'].append(device_info)
-
-#     markup = types.InlineKeyboardMarkup(row_width=2)
-#     markup.add(
-#         types.InlineKeyboardButton(text='Добавить еще устройства', callback_data='add_more'),
-#         types.InlineKeyboardButton(text='Закончить выбор', callback_data='finish')
-#     )
-    
-#     all_selected_devices = user_data[user_id].get('selected_devices', [])
-#     devices_text = '\n'.join([f'🟢 Алгоритм: {d["algorithm"]}\n'
-#                               f'🟢 Монета: {d["coin"]}\n'
-#                               f'🟢 Производитель: {d["manufacturer"]}\n'
-#                               f'🟢 Модель: {d["model"]}\n'
-#                               f'🟢 TH/s: {d["ths"]}\n'
-#                               f'🟢 Количество: {d["quantity"]}\n' for d in all_selected_devices])
-    
-#     message_text = (f'Вы выбрали следующие устройства:\n{devices_text}\n'
-#                     'Хотите добавить еще устройства или закончить выбор?')
-
-#     await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
-#     await bot.set_state(call.message.chat.id, CalculatorStates.confirm_additional_device)
 @bot.callback_query_handler(func=lambda call: call.data == 'submit', state=CalculatorStates.choose_count)
 async def finalize_selection(call):
     user_id = call.from_user.id
@@ -344,9 +262,6 @@ async def finalize_selection(call):
 
     user_data[user_id]['selected_devices'].append(device_info)
 
-    # Очистка текущего значения количества
-    user_data[user_id]['number'] = ''
-
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
         types.InlineKeyboardButton(text='Добавить еще устройства', callback_data='add_more'),
@@ -366,7 +281,6 @@ async def finalize_selection(call):
 
     await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
     await bot.set_state(call.message.chat.id, CalculatorStates.confirm_additional_device)
-
 
 @bot.callback_query_handler(func=lambda call: call.data == 'add_more', state=CalculatorStates.confirm_additional_device)
 async def add_more_device(call):
@@ -396,6 +310,6 @@ async def finish_selection(call):
                               f'🟢 Количество: {d["quantity"]}\n' for d in selected_devices])
     
     await bot.send_message(call.message.chat.id, f'Выбор завершен. Ваши выбранные устройства:\n{devices_text}\nСпасибо!')
-    user_data[user_id] = {}  # Clear user data for next session
+    user_data[user_id] = {}
     await bot.delete_message(call.message.chat.id, msg_ids[call.message.chat.id])
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_algorithm) 

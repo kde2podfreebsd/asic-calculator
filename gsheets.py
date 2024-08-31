@@ -37,11 +37,6 @@ class GoogleSheetsAPI:
     
     def serialize(self, sheet_id: str = os.getenv("GOOGLE_SHEET_ID")):
         data = self.read_data(sheet_id=sheet_id, range_name='A1:I1000')
-        # # Проверяем структуру данных
-        # print("Полученные данные из таблицы:")
-        # for row in data:
-        #     print(row)
-        # Преобразуем данные в объекты Asic
         data = [Asic(*row) for row in data[1:] if len(row) == 9]  # Убедитесь, что строка имеет 9 элементов
         return data
 

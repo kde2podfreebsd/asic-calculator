@@ -5,10 +5,6 @@ from bitinfo import crypto_full_names
 from telebot.asyncio_handler_backends import BaseMiddleware
 from telebot import types
 
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 import io
 from gsheets import GoogleSheetsAPI
 from context import ContextManager
@@ -20,7 +16,6 @@ g = GoogleSheetsAPI()
 asic_data = g.serialize()
 
 msg_ids = dict()
-user_data = dict()
 user_access_count = dict()
 
 class CalculatorStates(StatesGroup):
@@ -87,8 +82,7 @@ async def choose_blockchain(call):
     context_manager.fill_current_asic(call.message.chat.id, algorithm=selected_algorithm)
     coins = {asic.coin for asic in asic_data if selected_algorithm == asic.algorithm}
 
-    current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
-    message_text = (f'🟢 Алгоритм: <b>{selected_algorithm}<b>\n'
+    message_text = (f'🟢 Алгоритм: <b>{selected_algorithm}</b>\n'
                     '...Выберите монету')
     
     markup = types.InlineKeyboardMarkup(row_width=3)
@@ -97,7 +91,7 @@ async def choose_blockchain(call):
     for row in rows:
         markup.row(*row)
         
-    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
+    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup, parse_mode='HTML')
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_blockchain)
 
 @bot.callback_query_handler(func=lambda call: True, state=CalculatorStates.choose_blockchain)
@@ -107,8 +101,7 @@ async def choose_manufacturer(call):
 
     manufacturers = {asic.manufacturer for asic in asic_data if asic.coin == selected_coin}
 
-    current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
-    message_text = (f'🟢 Алгоритм: {current_context_data.get("algorithm")}\n'
+    message_text = (f'🟢 Алгоритм: {context_manager._current_asic.get(call.message.chat.id, {}).get("algorithm")}\n'
                     f'🟢 Монета: {selected_coin}\n'
                     '...Выберите производителя')
 
@@ -123,7 +116,7 @@ async def choose_manufacturer(call):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('manufacturer_'), state=CalculatorStates.choose_manufacturer)
 async def choose_model(call):
-    selected_manufacturer = call.data.split('manufacturer_')[1]
+    selected_manufacturer = call.data.split('_')[1]
     context_manager.fill_current_asic(call.message.chat.id, manufacturer=selected_manufacturer)
 
     models = {asic.model for asic in asic_data if asic.manufacturer == selected_manufacturer and asic.coin == context_manager._current_asic[call.message.chat.id]['coin']}
@@ -145,7 +138,7 @@ async def choose_model(call):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('model_'), state=CalculatorStates.choose_model)
 async def choose_ths(call):
-    selected_model = call.data.split('model_')[1]
+    selected_model = call.data.split('_')[1]
     context_manager.fill_current_asic(call.message.chat.id, model=selected_model)
 
     thss = {asic.ths for asic in asic_data if asic.model == selected_model}
@@ -168,9 +161,8 @@ async def choose_ths(call):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('ths_'), state=CalculatorStates.choose_ths)
 async def choose_count(call):
-    selected_ths = call.data.split('ths_')[1]
+    selected_ths = call.data.split('_')[1]
     context_manager.fill_current_asic(call.message.chat.id, ths=selected_ths)
-    user_data.setdefault(call.from_user.id, {'number': '', 'selected_devices': []})
     
     current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
     message_text = (f'🟢 Алгоритм: {current_context_data.get("algorithm")}\n'
@@ -195,13 +187,12 @@ async def choose_count(call):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('num_'), state=CalculatorStates.choose_count)
 async def handle_number(call):
-    user_id = call.from_user.id
-    current_number = user_data.get(user_id, {}).get('number', '')
+    current_number = context_manager._current_asic[call.message.chat.id].get('number', '')
     number = call.data.split('_')[1]
     
     if len(current_number) < 6:
         current_number += number
-    user_data[user_id]['number'] = current_number
+    context_manager._current_asic[call.message.chat.id]['number'] = current_number
 
     markup = types.InlineKeyboardMarkup(row_width=3)
     buttons = [types.InlineKeyboardButton(text=str(i), callback_data=f'num_{i}') for i in range(1, 10)]
@@ -226,8 +217,7 @@ async def handle_number(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == 'clear', state=CalculatorStates.choose_count)
 async def handle_clear(call):
-    user_id = call.from_user.id
-    user_data[user_id]['number'] = ''
+    context_manager._current_asic[call.message.chat.id]['number'] = ''
     
     markup = types.InlineKeyboardMarkup(row_width=3)
     buttons = [types.InlineKeyboardButton(text=str(i), callback_data=f'num_{i}') for i in range(1, 10)]
@@ -245,36 +235,41 @@ async def handle_clear(call):
 @bot.callback_query_handler(func=lambda call: call.data == 'submit', state=CalculatorStates.choose_count)
 async def finalize_selection(call):
     user_id = call.from_user.id
-    current_context_data = context_manager._current_asic.get(call.message.chat.id, {})
-    quantity = user_data.get(user_id, {}).get('number', '0')
-
-    device_info = {
-        'algorithm': current_context_data.get('algorithm'),
-        'coin': current_context_data.get('coin'),
-        'manufacturer': current_context_data.get('manufacturer'),
-        'model': current_context_data.get('model'),
-        'ths': current_context_data.get('ths'),
-        'quantity': quantity
-    }
-
-    if 'selected_devices' not in user_data[user_id]:
-        user_data[user_id]['selected_devices'] = []
-
-    user_data[user_id]['selected_devices'].append(device_info)
-
+    
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
         types.InlineKeyboardButton(text='Добавить еще устройства', callback_data='add_more'),
         types.InlineKeyboardButton(text='Закончить выбор', callback_data='finish')
     )
-    
-    all_selected_devices = user_data[user_id].get('selected_devices', [])
-    devices_text = '\n'.join([f'🟢 Алгоритм: {d["algorithm"]}\n'
-                              f'🟢 Монета: {d["coin"]}\n'
-                              f'🟢 Производитель: {d["manufacturer"]}\n'
-                              f'🟢 Модель: {d["model"]}\n'
-                              f'🟢 TH/s: {d["ths"]}\n'
-                              f'🟢 Количество: {d["quantity"]}\n' for d in all_selected_devices])
+
+    current_asic = context_manager._current_asic[user_id]
+    storage = context_manager._storage[user_id]
+
+    device_found = False
+
+    for device in storage:
+
+        if (device["algorithm"] == current_asic["algorithm"] and
+            device["coin"] == current_asic["coin"] and
+            device["manufacturer"] == current_asic["manufacturer"] and
+            device["model"] == current_asic["model"] and
+            device["ths"] == current_asic["ths"]):
+            
+            device["number"] += int(current_asic["number"])
+            device_found = True
+            break
+
+    if not device_found:
+        storage.append(current_asic)
+
+    devices_text = '\n'.join([
+        f'🟢 Алгоритм: {d["algorithm"]}\n'
+        f'🟢 Монета: {d["coin"]}\n'
+        f'🟢 Производитель: {d["manufacturer"]}\n'
+        f'🟢 Модель: {d["model"]}\n'
+        f'🟢 TH/s: {d["ths"]}\n'
+        f'🟢 Количество: {d["number"]}\n' for d in storage
+    ])
     
     message_text = (f'Вы выбрали следующие устройства:\n{devices_text}\n'
                     'Хотите добавить еще устройства или закончить выбор?')
@@ -282,12 +277,11 @@ async def finalize_selection(call):
     await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
     await bot.set_state(call.message.chat.id, CalculatorStates.confirm_additional_device)
 
-
 @bot.callback_query_handler(func=lambda call: call.data == 'add_more', state=CalculatorStates.confirm_additional_device)
 async def add_more_device(call):
     await bot.delete_message(call.message.chat.id, msg_ids[call.message.chat.id])
+    context_manager.append(user_id=call.message.chat.id)
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_algorithm)
-    
     markup = types.InlineKeyboardMarkup(row_width=3)
     unique_algorithms = {asic.algorithm for asic in asic_data if isinstance(asic.algorithm, str)}
     buttons = [types.InlineKeyboardButton(text=algorithm, callback_data=algorithm) for algorithm in unique_algorithms]
@@ -301,16 +295,15 @@ async def add_more_device(call):
 @bot.callback_query_handler(func=lambda call: call.data == 'finish', state=CalculatorStates.confirm_additional_device)
 async def finish_selection(call):
     user_id = call.from_user.id
-    selected_devices = user_data[user_id].get('selected_devices', [])
-    
+    context_manager.append(user_id=call.message.chat.id)
+    selected_devices = context_manager._storage[user_id]
     devices_text = '\n'.join([f'🟢 Алгоритм: {d["algorithm"]}\n'
                               f'🟢 Монета: {d["coin"]}\n'
                               f'🟢 Производитель: {d["manufacturer"]}\n'
                               f'🟢 Модель: {d["model"]}\n'
                               f'🟢 TH/s: {d["ths"]}\n'
-                              f'🟢 Количество: {d["quantity"]}\n' for d in selected_devices])
+                              f'🟢 Количество: {d["number"]}\n' for d in selected_devices])
     
     await bot.send_message(call.message.chat.id, f'Выбор завершен. Ваши выбранные устройства:\n{devices_text}\nСпасибо!')
-    user_data[user_id] = {}
     await bot.delete_message(call.message.chat.id, msg_ids[call.message.chat.id])
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_algorithm) 

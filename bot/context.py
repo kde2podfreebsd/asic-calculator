@@ -17,11 +17,26 @@ class ContextManager:
         if user_id not in self._current_asic:
             self._current_asic[user_id] = {}
         self._current_asic[user_id].update(kwargs)
+        print(self._current_asic[user_id])
 
     def append(self, user_id: int):
         if user_id not in self._storage:
             self._storage[user_id] = []
-        self._storage[user_id].append(self._current_asic[user_id])
+            
+        status = False
+        for asic in self._storage[user_id]:
+            if asic['algorithm'] == self._current_asic[user_id]['algorithm'] and \
+            asic['coin'] == self._current_asic[user_id]['coin'] and \
+            asic['manufacturer'] == self._current_asic[user_id]['manufacturer'] and \
+            asic['model'] == self._current_asic[user_id]['model'] and \
+            asic['ths'] == self._current_asic[user_id]['ths']:
+                asic['number'] = int(asic['number'])
+                asic['number'] += int(self._current_asic[user_id]['number'])
+                status = True
+
+        if not status:
+            self._storage[user_id].append(self._current_asic[user_id])
+
         self._current_asic[user_id] = {}
 
     def clear(self, user_id: int):

@@ -205,6 +205,3 @@ def generate_pdf(chatid):
         f.write(rendered_html)
 
     pdfkit.from_string(rendered_html, f'static/{chatid}.pdf')
-
-
-generate_pdf(123)

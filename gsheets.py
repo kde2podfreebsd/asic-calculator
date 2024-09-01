@@ -3,7 +3,8 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from dotenv import load_dotenv
 from dataclasses import dataclass
-from typing import List
+
+from typing import List, Dict, Set
 
 load_dotenv()
 
@@ -23,7 +24,10 @@ class Asic:
 
 class GoogleSheetsAPI:
     def __init__(self):
-        self.creds = ServiceAccountCredentials.from_json_keyfile_name(f'{basedir}/technologydynamicsasiccalc-76e05fa1a200.json')
+
+        self.creds = ServiceAccountCredentials.from_json_keyfile_name(
+            f'{basedir}/technologydynamicsasiccalc-76e05fa1a200.json')
+
         self.client = gspread.authorize(self.creds)
 
     def open_sheet(self, sheet_id: str = os.getenv("GOOGLE_SHEET_ID")):
@@ -36,9 +40,10 @@ class GoogleSheetsAPI:
     
     def serialize(self, sheet_id: str = os.getenv("GOOGLE_SHEET_ID")):
         data = self.read_data(sheet_id=sheet_id, range_name='A1:I1000')
-        data = [Asic(*row) for row in data[1:]]
+
+        data = [Asic(*row) for row in data[1:] if len(row) == 9]  # Убедитесь, что строка имеет 9 элементов
         return data
 
-
 g = GoogleSheetsAPI()
-print(g.serialize())
+asic_data = g.serialize()
+

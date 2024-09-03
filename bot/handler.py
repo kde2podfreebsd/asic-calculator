@@ -10,7 +10,7 @@ DEVICES_PER_PAGE = 1
 
 from gsheets import GoogleSheetsAPI
 from context import ContextManager
-from pdf import *
+# from pdf import *
 
 context_manager = ContextManager()
 
@@ -30,6 +30,17 @@ class CalculatorStates(StatesGroup):
     confirm_additional_device = State()
     choose_price = State()
     finalize_selection = State()
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'back')
+async def handle_back(call):
+    user_id = call.message.chat.id
+
+    current_state = await bot.get_state(user_id)
+
+    if current_state == CalculatorStates.choose_blockchain.name:
+        await bot.set_state(user_id, CalculatorStates.choose_algorithm)
+        await choose_algorithm(call.message)
 
 async def is_user_subscribed(user_id):
     try:
@@ -113,7 +124,7 @@ async def choose_algorithm(message):
     rows = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
     for row in rows:
         markup.row(*row)
-    
+
     msg = await bot.send_message(message.chat.id, 'Выберите алгоритм', reply_markup=markup)
     msg_ids[message.chat.id] = msg.id
 
@@ -131,7 +142,7 @@ async def choose_blockchain(call):
     rows = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
     for row in rows:
         markup.row(*row)
-        
+    markup.add(types.InlineKeyboardButton(text='Назад', callback_data='back'))
     await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup, parse_mode='HTML')
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_blockchain)
 

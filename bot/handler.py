@@ -352,7 +352,6 @@ async def add_more_device(call):
     msg_ids[call.message.chat.id] = msg.id
 
 def get_electricity_markup(price):
-    """Создает инлайн-клавиатуру для управления ценой за электричество."""
     markup = types.InlineKeyboardMarkup(row_width=3)
     
     markup.add(
@@ -369,7 +368,6 @@ def get_electricity_markup(price):
     return markup
 
 async def send_price_selection_menu(chat_id):
-    """Отправляет сообщение с меню выбора цены за электричество."""
     if chat_id not in electricity_prices:
         electricity_prices[chat_id] = 0.05 
     
@@ -382,7 +380,6 @@ async def send_price_selection_menu(chat_id):
 
 @bot.callback_query_handler(func=lambda call: call.data in ['tariff', 'decrease_price', 'increase_price', 'current_price', 'go_back', 'select_price'], state=CalculatorStates.confirm_additional_device)
 async def handle_price_selection(call):
-    """Обрабатывает выбор пользователя в меню цены за электричество."""
     chat_id = call.message.chat.id
     
     if chat_id not in electricity_prices:

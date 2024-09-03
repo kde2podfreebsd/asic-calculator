@@ -17,7 +17,6 @@ class ContextManager:
         if user_id not in self._current_asic:
             self._current_asic[user_id] = {}
         self._current_asic[user_id].update(kwargs)
-        print(self._current_asic[user_id])
 
     def append(self, user_id: int):
         if user_id not in self._storage:

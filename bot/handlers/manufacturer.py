@@ -12,8 +12,8 @@ async def choose_manufacturer(call):
 
     manufacturers = {asic.manufacturer for asic in asic_data if asic.coin == selected_coin}
 
-    message_text = (f'🟢 Алгоритм: {context_manager.current_asic.get(call.message.chat.id, {}).get("algorithm")}\n'
-                    f'🟢 Монета: {selected_coin}\n'
+    message_text = (f'🟢 Алгоритм: <em>{context_manager.current_asic.get(call.message.chat.id, {}).get("algorithm")}</em>\n'
+                    f'🟢 Монета: <em>{selected_coin}</em>\n'
                     '...Выберите производителя')
 
     markup = types.InlineKeyboardMarkup(row_width=3)
@@ -22,5 +22,5 @@ async def choose_manufacturer(call):
     for row in rows:
         markup.row(*row)
     markup.row(types.InlineKeyboardButton(text='Назад', callback_data='back'))
-    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
+    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup, parse_mode='HTML')
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_manufacturer)

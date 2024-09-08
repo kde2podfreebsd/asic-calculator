@@ -13,9 +13,9 @@ async def choose_model(call):
     models = {asic.model for asic in asic_data if asic.manufacturer == selected_manufacturer and asic.coin == context_manager.current_asic[call.message.chat.id]['coin']}
 
     current_context_data = context_manager.current_asic.get(call.message.chat.id, {})
-    message_text = (f'🟢 Алгоритм: {current_context_data.get("algorithm")}\n'
-                    f'🟢 Монета: {current_context_data.get("coin")}\n'
-                    f'🟢 Производитель: {selected_manufacturer}\n'
+    message_text = (f'🟢 Алгоритм: <em>{current_context_data.get("algorithm")}</em>\n'
+                    f'🟢 Монета: <em>{current_context_data.get("coin")}</em>\n'
+                    f'🟢 Производитель: <em>{selected_manufacturer}</em>\n'
                     '...Выберите модель')
 
     markup = types.InlineKeyboardMarkup(row_width=3)
@@ -24,5 +24,5 @@ async def choose_model(call):
     for row in rows:
         markup.row(*row)
     markup.row(types.InlineKeyboardButton(text='Назад', callback_data='back'))
-    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
+    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup, parse_mode='HTML')
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_model)

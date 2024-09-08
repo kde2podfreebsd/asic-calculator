@@ -10,7 +10,7 @@ async def choose_blockchain(call):
     context_manager.fill_current_asic(call.message.chat.id, algorithm=selected_algorithm)
     coins = {asic.coin for asic in asic_data if selected_algorithm == asic.algorithm}
 
-    message_text = (f'🟢 Алгоритм: <b>{selected_algorithm}</b>\n'
+    message_text = (f'🟢 Алгоритм: <em>{selected_algorithm}</em>\n'
                     '...Выберите монету')
 
     markup = types.InlineKeyboardMarkup(row_width=3)

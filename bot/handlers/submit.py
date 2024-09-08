@@ -27,12 +27,12 @@ async def display_devices_with_pagination(call, page: int = 1, is_slider: bool =
     data_to_display = chunks[page - 1] if page <= len(chunks) else []
 
     devices_text = '\n'.join([
-        f'🟢 Алгоритм: {d["algorithm"]}\n'
-        f'🟢 Монета: {d["coin"]}\n'
-        f'🟢 Производитель: {d["manufacturer"]}\n' 
-        f'🟢 Модель: {d["model"]}\n'
-        f'🟢 TH/s: {d["ths"]}\n'
-        f'🟢 Количество: {d["number"]}\n' for d in data_to_display
+        f'🟢 Алгоритм: <em>{d["algorithm"]}</em>\n'
+        f'🟢 Монета: <em>{d["coin"]}</em>\n'
+        f'🟢 Производитель: <em>{d["manufacturer"]}</em>\n' 
+        f'🟢 Модель: <em>{d["model"]}</em>\n'
+        f'🟢 TH/s: <em>{d["ths"]}</em>\n'
+        f'🟢 Количество: <em>{d["number"]}</em>\n' for d in data_to_display
     ])
 
     message_text = (f'Вы выбрали следующие устройства:\n{devices_text}\n'
@@ -60,9 +60,9 @@ async def display_devices_with_pagination(call, page: int = 1, is_slider: bool =
     )
 
     if user_id in msg_ids:
-        await bot.edit_message_text(message_text, user_id, msg_ids[user_id], reply_markup=markup)
+        await bot.edit_message_text(message_text, user_id, msg_ids[user_id], reply_markup=markup, parse_mode='HTML')
     else:
-        msg = await bot.send_message(user_id, message_text, reply_markup=markup)
+        msg = await bot.send_message(user_id, message_text, reply_markup=markup, parse_mode='HTML')
         msg_ids[user_id] = msg.message_id
 
     await bot.set_state(user_id, CalculatorStates.confirm_additional_device)

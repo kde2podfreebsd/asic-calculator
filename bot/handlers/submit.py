@@ -2,13 +2,12 @@ from bot.config import *
 from telebot import types
 from math import ceil
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('submit'), state=CalculatorStates.choose_count)
+@bot.callback_query_handler(func=lambda call: call.data == 'submit', state=CalculatorStates.choose_count)
 async def handle_submit(call):
     user_id = call.message.chat.id
     current_context = context_manager.current_asic.get(user_id, {})
-    if call.data != 'submit$':
-        if 'number' not in current_context or not current_context['number']:
-            return
+    if 'number' not in current_context or not current_context['number']:
+        return
     await display_devices_with_pagination(call, page=1, is_slider=False)
 
 async def display_devices_with_pagination(call, page: int = 1, is_slider: bool = False):

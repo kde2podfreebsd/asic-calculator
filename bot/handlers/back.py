@@ -5,12 +5,11 @@ from bot.handlers.manufacturer import choose_manufacturer
 from bot.handlers.model import choose_model
 from bot.handlers.ths import choose_ths
 from bot.handlers.count import choose_count
-from bot.handlers.submit import handle_submit
 
 @bot.callback_query_handler(func=lambda call: call.data == 'back')
 async def back_inline_handler(call):
     current_state = await bot.get_state(user_id=call.from_user.id)
-
+    print(current_state)
     if current_state == CalculatorStates.choose_blockchain.name:
         await bot.set_state(call.message.chat.id, CalculatorStates.choose_algorithm)
         await choose_algorithm(call.message)
@@ -34,7 +33,3 @@ async def back_inline_handler(call):
     if current_state == CalculatorStates.confirm_additional_device.name:
         await bot.set_state(call.message.chat.id, CalculatorStates.choose_count)
         await choose_count(call)
-
-    if current_state == CalculatorStates.choose_algorithm.name:
-        await bot.set_state(call.message.chat.id, CalculatorStates.choose_count)
-        await handle_submit(call)

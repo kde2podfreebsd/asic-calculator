@@ -44,7 +44,7 @@ class GoogleSheetsAPI:
     def clean_control_chars(value: str) -> str:
         value = translit(value, language_code='ru', reversed=True)
         value = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', value)
-        return value.strip()
+        return value.replace(" ", '')
 
     def remove_control_chars(self, data: List[List[str]]) -> List[List[str]]:
         cleaned_data = []

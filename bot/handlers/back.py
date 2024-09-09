@@ -10,6 +10,7 @@ from bot.handlers.count import choose_count
 async def back_inline_handler(call):
     current_state = await bot.get_state(user_id=call.from_user.id)
     print(current_state)
+    await bot.delete_state(call.from_user.id)
     if current_state == CalculatorStates.choose_blockchain.name:
         await bot.set_state(call.message.chat.id, CalculatorStates.choose_algorithm)
         await choose_algorithm(call.message)

@@ -15,18 +15,18 @@ def create_number_keyboard():
     return markup
 
 def format_message_text(context_data, number=None):
-    message_text = (f'🟢 Алгоритм: <em>{context_data.get("algorithm")}</em>\n'
-                    f'🟢 Монета: <em>{context_data.get("coin")}</em>\n'
-                    f'🟢 Производитель: <em>{context_data.get("manufacturer")}</em\n'
-                    f'🟢 Модель: <em>{context_data.get("model")}</em>\n'
-                    f'🟢 TH/s: <em>{context_data.get("ths")}</em>')
+    message_text = (f'🟢 Алгоритм: {context_data.get("algorithm")}\n'
+                    f'🟢 Монета: {context_data.get("coin")}\n'
+                    f'🟢 Производитель: {context_data.get("manufacturer")}\n'
+                    f'🟢 Модель: {context_data.get("model")}\n'
+                    f'🟢 TH/s: {context_data.get("ths")}')
     if number is not None:
         message_text += f'\n🟢 Количество: {number}'
     return message_text
 
 async def update_message_text(call, message_text, markup):
-    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id])
-    await bot.edit_message_reply_markup(call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup, parse_mode='HTML')
+    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], parse_mode = 'HTML')
+    await bot.edit_message_reply_markup(call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('ths_'), state=CalculatorStates.choose_ths)
 async def choose_count(call):

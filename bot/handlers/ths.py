@@ -1,7 +1,6 @@
 from bot.config import *
 from telebot import types
 
-
 @bot.callback_query_handler(func=lambda call: call.data.startswith('model_'), state=CalculatorStates.choose_model)
 async def choose_ths(call):
     if call.data == 'back':
@@ -15,10 +14,10 @@ async def choose_ths(call):
     thss = {asic.ths for asic in asic_data if asic.model == selected_model}
 
     current_context_data = context_manager.current_asic.get(call.message.chat.id, {})
-    message_text = (f'🟢 Алгоритм: <em>{current_context_data.get("algorithm")}</em>\n'
-                    f'🟢 Монета: <em>{current_context_data.get("coin")}</em>\n'
-                    f'🟢 Производитель: <em>{current_context_data.get("manufacturer")}</em>\n'
-                    f'🟢 Модель: <em>{selected_model}</em>\n'
+    message_text = (f'🟢 Алгоритм: {current_context_data.get("algorithm")}\n'
+                    f'🟢 Монета: {current_context_data.get("coin")}\n'
+                    f'🟢 Производитель: {current_context_data.get("manufacturer")}\n'
+                    f'🟢 Модель: {selected_model}\n'
                     '...Выберите TH/s')
 
     markup = types.InlineKeyboardMarkup(row_width=3)
@@ -27,5 +26,5 @@ async def choose_ths(call):
     for row in rows:
         markup.row(*row)
     markup.row(types.InlineKeyboardButton(text='Назад', callback_data='back'))
-    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup, parse_mode='HTML')
+    await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_ths)

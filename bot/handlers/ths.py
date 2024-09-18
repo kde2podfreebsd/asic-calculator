@@ -28,3 +28,5 @@ async def choose_ths(call):
     markup.row(types.InlineKeyboardButton(text='Назад', callback_data='back'))
     await bot.edit_message_text(message_text, call.message.chat.id, msg_ids[call.message.chat.id], reply_markup=markup)
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_ths)
+    current_state = await bot.get_state(user_id=call.from_user.id)
+    print(current_state)

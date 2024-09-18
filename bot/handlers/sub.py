@@ -12,10 +12,10 @@ async def send_main_menu(chat_id):
     await bot.set_state(chat_id, CalculatorStates.choose_algorithm)
 
 def get_main_menu_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
-        types.KeyboardButton('📈 Калькулятор доходности'),
-        types.KeyboardButton('🛒 Наши устройства')
+        types.InlineKeyboardButton('📈 Калькулятор доходности', callback_data='calc_income'),
+        types.InlineKeyboardButton('🛒 Наши устройства', callback_data='devices_catalog')
     )
     return markup
 

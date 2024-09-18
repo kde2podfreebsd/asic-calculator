@@ -21,8 +21,8 @@ class Asic:
     consumption: int
     rub_price: float
     usdt_price: float
-    algorithm: List[str]
-    coin: List[str]
+    algorithm: str
+    coin: str
 
 class GoogleSheetsAPI:
     def __init__(self):

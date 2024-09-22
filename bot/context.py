@@ -12,6 +12,7 @@ class ContextManager:
     def __init__(self) -> None:
         self.storage = dict()
         self.current_asic = dict()
+        self.previous_asic = dict()
 
     def fill_current_asic(self, user_id: int, **kwargs: Any) -> None:
         if user_id not in self.current_asic:
@@ -35,9 +36,10 @@ class ContextManager:
 
         if not status:
             self.storage[user_id].append(self.current_asic[user_id])
-
+        self.previous_asic[user_id] = self.current_asic[user_id].copy()
         self.current_asic[user_id] = {}
 
     def clear(self, user_id: int):
         self.storage[user_id] = []
         self.current_asic[user_id] = {}
+        self.previous_asic[user_id] = {}

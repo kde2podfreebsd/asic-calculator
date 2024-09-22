@@ -43,8 +43,6 @@ async def choose_count(call):
     markup = create_number_keyboard()
     await update_message_text(call, message_text, markup)
     await bot.set_state(call.message.chat.id, CalculatorStates.choose_count)
-    current_state = await bot.get_state(user_id=call.from_user.id)
-    print(current_state)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('num_'), state=CalculatorStates.choose_count)
 async def handle_number(call):
